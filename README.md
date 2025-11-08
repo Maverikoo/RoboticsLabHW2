@@ -7,19 +7,17 @@ The goal of this homework is to develop kinematic and a vision-based controller 
 The project is based on the ros2_kdl_package package and the ros2_iiwa package provided by the course.
 
 Download the repository's content in the docker's image folder
-```bash
-git clone https://github.com/Maverikoo/RoboticsLabHW2.git
-```
+
 We created a .launch.py file for every point of the homework.
 
 ## 1 Kinematic control:
 
 ##  a: 
-Per lanciare la simulazione del robot:
+To launch the iiwa robot:
 ```bash
 ros2 launch iiwa_bringup iiwa.launch.py
 ```
-Per lanciare il controllo:
+To launch the controller node:
 ```bash
 ros2 launch ros2_kdl_package kdl_node_1a.launch.py
 ```
