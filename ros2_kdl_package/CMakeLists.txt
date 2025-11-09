@@ -33,7 +33,21 @@ ament_target_dependencies(ros2_kdl_node_1a
   sensor_msgs
   std_msgs)
 
-install(TARGETS ros2_kdl_node_1a
+  add_executable(ros2_kdl_node_1b src/ros2_kdl_node_1a.cpp src/kdl_robot.cpp src/kdl_planner.cpp src/kdl_control.cpp)
+target_include_directories(ros2_kdl_node_1b PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${EIGEN3_INCLUDE_DIRS})
+target_compile_features(ros2_kdl_node_1b PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+ament_target_dependencies(ros2_kdl_node_1b 
+  orocos_kdl
+  rclcpp
+  kdl_parser
+  sensor_msgs
+  std_msgs)
+
+install(TARGETS ros2_kdl_node_1a ros2_kdl_node_1b
   DESTINATION lib/${PROJECT_NAME})
 
 add_executable(ros2_kdl_node_example src/ros2_kdl_node_example.cpp)

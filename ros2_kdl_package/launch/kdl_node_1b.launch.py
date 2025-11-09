@@ -6,9 +6,15 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
+    ctrl = DeclareLaunchArgument(
+        name='ctrl',
+        default_value='velocity_ctrl',
+        description='Controller to use: velocity_ctrl or velocity_ctrl_null'
+    )
+
     cmd_interface = DeclareLaunchArgument(
         name='cmd_interface',
-        default_value='position',  
+        default_value='velocity',  # position | velocity | effort
         description='Command interface of the robot controllers'
     )
 
@@ -19,22 +25,24 @@ def generate_launch_description():
             "config",
             "kdl_param.yaml",
         ]),
-        description="YAML con i parametri del nodo"
+        description="YAML"
     )
 
-    ros2_kdl_node_1a = Node(
+    ros2_kdl_node_1b = Node(
         package="ros2_kdl_package",
-        executable="ros2_kdl_node_1a",
-        name="ros2_kdl_node_1a",
+        executable="ros2_kdl_node_1b",
+        name="ros2_kdl_node_1b",
         output="screen",
         parameters=[
             LaunchConfiguration("params_file"),
+            {"ctrl": LaunchConfiguration("ctrl")},
             {"cmd_interface": LaunchConfiguration("cmd_interface")},
         ],
     )
 
     return LaunchDescription([
+        ctrl,
         cmd_interface,
         params_file_arg,
-        ros2_kdl_node_1a,
+        ros2_kdl_node_1b,
     ])

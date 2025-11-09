@@ -21,3 +21,18 @@ To launch the controller node:
 ```bash
 ros2 launch ros2_kdl_package kdl_node_1a.launch.py
 ```
+
+## b:
+To launch the iiwa robot:
+```bash
+ros2 launch iiwa_bringup iiwa.launch.py command_interface:="velocity" robot_controller:="velocity_controller"
+```
+To launch the velocity controller:
+-Velocity_ctrl
+```bash
+ros2 launch ros2_kdl_package kdl_node_1b.launch.py cmd_interface:=velocity ctrl:=velocity_ctrl
+```
+-Velocity_ctrl_null
+```bash
+ros2 launch ros2_kdl_package kdl_node_1b.launch.py cmd_interface:=velocity ctrl:=velocity_ctrl_null
+```
