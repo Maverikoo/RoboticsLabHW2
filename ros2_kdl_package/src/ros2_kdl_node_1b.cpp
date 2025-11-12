@@ -34,7 +34,7 @@ class Iiwa_pub_sub : public rclcpp::Node
         node_handle_(std::shared_ptr<Iiwa_pub_sub>(this))
         {
             // declare cmd_interface parameter (position, velocity)
-            declare_parameter("cmd_interface", "position"); // default to "position"
+            declare_parameter("cmd_interface", "velocity"); // default to "velocity"
             get_parameter("cmd_interface", cmd_interface_);
             RCLCPP_INFO(get_logger(),"Current cmd interface is: '%s'", cmd_interface_.c_str());
 
@@ -120,6 +120,11 @@ class Iiwa_pub_sub : public rclcpp::Node
             KDL::JntArray q_min(nj), q_max(nj);
             q_min.data << -2.96,-2.09,-2.96,-2.09,-2.96,-2.09,-2.96; //-2*M_PI,-2*M_PI; // TODO: read from urdf file
             q_max.data <<  2.96,2.09,2.96,2.09,2.96,2.09,2.96; //2*M_PI, 2*M_PI; // TODO: read from urdf file          
+           
+            // saves the joints data
+            q_min_ = q_min.data;
+            q_max_ = q_max.data;
+           
             robot_->setJntLimits(q_min,q_max);            
             joint_positions_.resize(nj); 
             joint_velocities_.resize(nj); 
@@ -305,31 +310,29 @@ class Iiwa_pub_sub : public rclcpp::Node
                     robot_->getInverseKinematics(nextFrame, joint_positions_cmd_);
                 }
                 else if(cmd_interface_ == "velocity"){
-                    // Compute differential IK
-                    Vector6d cartvel; cartvel << p_.vel + Kp_*error, o_error;
-
+                
                     // Selettore del controllore di velocità
-                    if (ctrl_== "velocity_ctrl")
+                    if (ctrl_ == "velocity_ctrl")
                     {
-                        // Chiama il controllore originale (presumendo che sia in KDLController)
-                        // Assumendo che velocity_ctrl prenda 'cartvel' e restituisca KDL::JntArray
-                        // NOTA: 'pseudoinverse(robot_->getEEJacobian().data)*cartvel' era la vecchia implementazione diretta.
-                        // Ora presumiamo che questa logica sia dentro controller_->velocity_ctrl
-                        // Se velocity_ctrl non esiste, ripristina la riga seguente:
-                        // joint_velocities_cmd_.data = pseudoinverse(robot_->getEEJacobian().data)*cartvel;
-                        
-                        // Assumendo che i tuoi metodi del controller restituiscano un KDL::JntArray
-                        joint_velocities_cmd_ = controller_->velocity_ctrl(cartvel); 
+                        Vector6d cartvel; cartvel << p_.vel + Kp_*error, o_error;
+                        joint_velocities_cmd_.data = pseudoinverse(robot_->getEEJacobian().data)*cartvel;
                     }
-                    else if (ctrl_ == "velocity_ctrl_null")
+                   else if (ctrl_ == "velocity_ctrl_null")
                     {
-                        // Chiama il tuo nuovo controllore
-                        // Assumendo che anche velocity_ctrl_null prenda 'cartvel' e restituisca KDL::JntArray
-                        joint_velocities_cmd_ = controller_->velocity_ctrl_null(cartvel);
+                        // 1) target dalla TRAIETTORIA, non dagli end_position fissi
+                        const Eigen::Vector3d p_des = p_.pos;
+
+                        // lambda
+                        double lambda = 0.5;            
+
+                        joint_velocities_cmd_ = controller_->velocity_ctrl_null(p_des, Kp_, lambda, q_min_, q_max_);
+
+                        // saturation for safety
+                      //  for (long int i = 0; i < joint_velocities_cmd_.data.size(); ++i) {
+                        //    joint_velocities_cmd_.data[i] = std::clamp(joint_velocities_cmd_.data[i], -1.5, 1.5);
+                        //}
                     }
 
-                    // La riga originale è stata sostituita dal blocco if/else
-                    // joint_velocities_cmd_.data = pseudoinverse(robot_->getEEJacobian().data)*cartvel;
                 }
                 else if(cmd_interface_ == "effort"){
 
@@ -373,7 +376,11 @@ class Iiwa_pub_sub : public rclcpp::Node
                 // std::cout << "/////////////////////////////////////////////////" <<std::endl <<std::endl;
             }
             else{
+
+                KDL::Frame ee_final = robot_->getEEFrame();
                 RCLCPP_INFO_ONCE(this->get_logger(), "Trajectory executed successfully ...");
+                RCLCPP_INFO_ONCE(this->get_logger(),"Final EE position (actual): [%.4f, %.4f, %.4f]", ee_final.p[0], ee_final.p[1], ee_final.p[2]);
+                RCLCPP_INFO_ONCE(this->get_logger(), "Final EE position (desired): [%.4f, %.4f, %.4f]" ,p_.pos[0], p_.pos[1], p_.pos[2]);
                 
                 // Send joint velocity commands
                 if(cmd_interface_ == "position"){
@@ -438,7 +445,7 @@ class Iiwa_pub_sub : public rclcpp::Node
         KDL::JntArray joint_efforts_cmd_;
 
         std::shared_ptr<KDLRobot> robot_;
-        std::shared_ptr<KDLController> controller_; // Membro per il controller
+        std::shared_ptr<KDLController> controller_; // controller
         KDLPlanner planner_;
 
         trajectory_point p_;
@@ -449,7 +456,7 @@ class Iiwa_pub_sub : public rclcpp::Node
         std::string cmd_interface_;
         std::string traj_type_;
         std::string s_type_;
-        std::string ctrl_; // Membro per il parametro ctrl
+        std::string ctrl_; // ctrl
 
         KDL::Frame init_cart_pose_;
 
@@ -461,6 +468,10 @@ class Iiwa_pub_sub : public rclcpp::Node
         double end_position_x_;
         double end_position_y_;
         double end_position_z_;
+
+        Eigen::VectorXd q_min_;
+        Eigen::VectorXd q_max_;
+        
 
 };
 

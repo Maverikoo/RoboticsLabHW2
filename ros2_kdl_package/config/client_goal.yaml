@@ -1,0 +1,6 @@
+execute_trajectory_client:
+  ros__parameters:
+    
+       end_position_x: 0.8
+       end_position_y: 0.5
+       end_position_z: 0.4

@@ -1,0 +1,8 @@
+# Goal: Cosa inviamo al server per avviare il compito
+geometry_msgs/Point target_end_position
+---
+# Result: Cosa il server restituisce una sola volta alla fine
+bool success
+---
+# Feedback: Cosa il server invia ripetutamente durante l'esecuzione
+float64 current_error_norm

@@ -5,3 +5,14 @@ ament_prepend_unique_value GAZEBO_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@P
 # Gazebo ignition and forward
 ament_prepend_unique_value IGN_GAZEBO_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/meshes"
 ament_prepend_unique_value GZ_SIM_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/meshes"
+
+
+# Extra path for Gazebo models (e.g., arucotag)
+
+# Gazebo Classic
+ament_prepend_unique_value GAZEBO_MODEL_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/gazebo/models"
+ament_prepend_unique_value GAZEBO_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/gazebo/models"
+
+# Ignition / Gazebo Sim (Fortress/Harmonic, ecc.)
+ament_prepend_unique_value IGN_GAZEBO_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/gazebo/models"
+ament_prepend_unique_value GZ_SIM_RESOURCE_PATH "$COLCON_CURRENT_PREFIX/share/@PROJECT_NAME@/gazebo/models"

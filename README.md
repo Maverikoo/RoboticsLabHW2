@@ -8,7 +8,7 @@ The project is based on the ros2_kdl_package package and the ros2_iiwa package p
 
 Download the repository's content in the docker's image folder
 
-We created a .launch.py file for every point of the homework.
+We created a launch file for every point of the homework.
 
 ## 1 Kinematic control:
 
@@ -28,6 +28,7 @@ To launch the iiwa robot:
 ros2 launch iiwa_bringup iiwa.launch.py command_interface:="velocity" robot_controller:="velocity_controller"
 ```
 To launch the velocity controller:
+
 -Velocity_ctrl
 ```bash
 ros2 launch ros2_kdl_package kdl_node_1b.launch.py cmd_interface:=velocity ctrl:=velocity_ctrl
@@ -35,4 +36,39 @@ ros2 launch ros2_kdl_package kdl_node_1b.launch.py cmd_interface:=velocity ctrl:
 -Velocity_ctrl_null
 ```bash
 ros2 launch ros2_kdl_package kdl_node_1b.launch.py cmd_interface:=velocity ctrl:=velocity_ctrl_null
+```
+
+## c:
+To launch the simulation:
+```bash
+ros2 launch iiwa_bringup iiwa.launch.py command_interface:="velocity" robot_controller:="velocity_controller"
+```
+
+To launch the server with the velocity_ctrl_null controller:
+```bash
+ros2 launch ros2_kdl_package kdl_node_1c.launch.py cmd_interface:=velocity ctrl:=velocity_ctrl_null
+```
+
+To launch the client:
+```bash
+ros2 launch ros2_kdl_package execute_trajectory.launch.py
+```
+
+## 2 Vision-based control:
+
+Not working...
+
+To launch the gazebo enviroment
+```bash
+ros2 launch iiwa_description iiwa_world.launch.py
+```
+
+To launch the server with the vision controller:
+```bash
+ros2 launch ros2_kdl_package kdl_node_1c.launch.py cmd_interface:=velocity ctrl:=vision
+```
+
+To launch the client:
+```bash
+ros2 launch ros2_kdl_package execute_trajectory.launch.py
 ```

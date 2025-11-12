@@ -18,10 +18,10 @@
         model://arucotag
       </uri>
       <name>arucotag</name>
-      <pose>0 -0.707 0.707 0 1.57 0</pose>
+      <pose>-0 -1 1 -1.57 3.1416 0</pose>
     </include>
 
-    <gravity>0 0 0</gravity>
+    <gravity>0 0 -9.81</gravity>
 
     <!-- Focus camera on tall pendulum -->
     <gui fullscreen='0'>
