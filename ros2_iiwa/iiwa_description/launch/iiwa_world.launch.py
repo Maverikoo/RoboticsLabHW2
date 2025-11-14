@@ -42,7 +42,7 @@ def generate_launch_description():
 
     node_spawn = Node(
         package='ros_gz_sim', executable='create', output='screen',
-        arguments=['-topic', 'robot_description', '-name', model_name, '-z', '-0.3', '-allow_renaming', 'true'],
+        arguments=['-topic', 'robot_description', '-name', model_name, '-allow_renaming', 'true'],
     )
 
     node_jsb = Node(package="controller_manager", executable="spawner", arguments=["joint_state_broadcaster", "-c", "/controller_manager"])
